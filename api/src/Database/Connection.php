@@ -13,7 +13,7 @@ class Connect {
                 $config['password']
             );
             self::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            self::$db->exec('PRAGMA foreign_keys = ON');
+            if(self::$db->getAttribute(PDO::ATTR_DRIVER_NAME) === 'sqlite') self::$db->exec('PRAGMA foreign_keys = ON');
         } catch (PDOException $e) {
             die($e->getMessage());
         }

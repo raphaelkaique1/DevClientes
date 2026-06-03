@@ -6,7 +6,7 @@ class CustomerRepository {
     public function __construct() {
         $this->db = Connection::connect();
     }
-    public function create(Customer $customer): bool {
+    public function insert(Customer $customer): bool {
         $stmt = $this->db->prepare("INSERT INTO Customers (
                 name,
                 email,

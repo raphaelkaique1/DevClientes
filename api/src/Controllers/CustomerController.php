@@ -25,8 +25,10 @@ class CustomerController {
             $repository = new CustomerRepository;
 
             $repository->create($customer);
+            http_response_code(201);
             echo 'Usuário cadastrado com sucesso!';
         } catch(Throwable $error) {
+            http_response_code(500);
             echo "Erro ao registrar este usuário!";
         }
     }

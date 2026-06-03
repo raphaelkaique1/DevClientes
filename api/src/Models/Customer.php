@@ -4,6 +4,7 @@ class Customer {
         public ?int $id,
         public string $name,
         public string $email,
+        public string $role,
         public int $status
     ) {}
 }

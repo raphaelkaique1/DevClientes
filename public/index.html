@@ -6,13 +6,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href="https://htmx.org/favicon.svg" type="image/svg+xml" />
         <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.10/dist/htmx.min.js" integrity="sha384-H5SrcfygHmAuTDZphMHqBJLc3FhssKjG7w/CeCpFReSfwBWDTKpkzPP8c+cLsK+V" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.4" integrity="sha384-T41oglUPvXLGBVyRdZsVRxNWnOOqCynaPubjUVjxhsjFTKrFJGEMm3/0KGmNQ+Pg" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
         <title>DevClientes</title>
     </head>
 
-    <body class="bg-neutral-900 w-full mx-auto px-2 max-w-7xl">
+    <body class="bg-neutral-900 w-full mx-auto px-2 max-w-7xl" hx-ext="response-targets">
         <header>
             <div id="toast-notification"></div>
+            <div id="client-error-notification"></div>
+            <div id="server-error-notification"></div>
         </header>
         <main>
             <h1 class="text-gray-400 text-center font-bold text-4xl mt-14 mb-4">DevClientes</h1>
@@ -33,6 +36,8 @@
                 "
                 hx-post="/api/customers"
                 hx-target="#toast-notification"
+                hx-target-4*="#client-error-notification"
+                hx-target-5*="#server-error-notification"
             >
                 <div class="w-full">
                     <label
@@ -48,7 +53,6 @@
                         type="text"
                         name="name"
                         id="name"
-                        placeholder="Digite seu nome completo..."
                         class="
                             w-full
                             my-1
@@ -56,6 +60,9 @@
                             rounded
                             bg-white
                         "
+                        placeholder="Digite seu nome completo..."
+                        autocapitalize="words"
+                        pattern="((\p{Lu}\p{Ll}{3,99})\s?)+"
                         required
                     />
                 </div>
@@ -73,7 +80,6 @@
                         type="email"
                         name="email"
                         id="email"
-                        placeholder="Digite seu e-mail..."
                         class="
                             w-full
                             my-1
@@ -81,6 +87,8 @@
                             rounded
                             bg-white
                         "
+                        placeholder="Digite seu e-mail..."
+                        autocapitalize="none"
                         required
                     />
                 </div>
@@ -97,7 +105,6 @@
                     <select
                         name="role"
                         id="role"
-                        required
                         class="
                             w-full
                             my-1
@@ -105,6 +112,7 @@
                             rounded
                             bg-white
                         "
+                        required
                     >
                         <option value="" disabled selected>Selecione uma opção...</option>
                         <option value="fullstack">Full Stack</option>

@@ -13,15 +13,19 @@ class CustomerController {
     }
 
     public function store(): void {
-        foreach(Request::data() as $key => $value) {
+        $data = Request::data();
+        if(!$data) {
+            Response::send(new Response('Formato da requisição inválido.', 415));
+            return;
+        }
+        foreach($data as $key => $value) {
             if($key === 'status') continue;
             if(empty($value)) {
                 Response::send(new Response('Preencha todos os campos obrigatórios!', 406));
                 return;
             };
         }
-
-        Response::send(match(Operation::try(fn() => new CustomerService()->create(Request::data()))) {
+        Response::send(match(Operation::runSafe(fn() => (new CustomerService())->create($data))) {
             true    => new Response('Usuário criado com sucesso!', 201),
             false   => new Response('Não foi possível criar o usuário.', 400),
             default => new Response('Erro ao cadastrar usuário!', 500)

@@ -8,17 +8,18 @@
         <script src="https://cdn.jsdelivr.net/npm/htmx.org@2/dist/htmx.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2/dist/response-targets.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+        <script src="/public/js/script.js" defer></script>
         <title>DevClientes</title>
     </head>
 
-    <body class="bg-neutral-900 w-full mx-auto px-2 max-w-7xl" hx-ext="response-targets">
+    <body class="bg-neutral-900 w-full h-screen" hx-ext="response-targets">
         <header>
             <div id="toast-notification" class="empty:hidden text-white font-semibold bg-green-400 py-4 px-8 rounded-md absolute top-8 right-8"></div>
             <div id="client-error-notification" class="empty:hidden text-white font-semibold bg-red-400 py-4 px-8 rounded-md absolute top-8 right-8"></div>
             <div id="server-error-notification" class="empty:hidden text-white font-semibold bg-red-400 py-4 px-8 rounded-md absolute top-8 right-8"></div>
         </header>
-        <main>
-            <h1 class="text-gray-400 text-center font-bold text-4xl mt-14 mb-4">DevClientes</h1>
+        <main class="py-14">
+            <h1 class="text-gray-400 text-center font-bold text-4xl mb-4">DevClientes</h1>
             <form
                 id="form-customers"
                 class="
@@ -63,7 +64,7 @@
                         placeholder="Digite seu nome completo..."
                         autocapitalize="words"
                         pattern="((\p{Lu}\p{Ll}{3,99})\s?)+"
-                        required
+                        
                     />
                 </div>
                 <div class="w-full">
@@ -89,7 +90,7 @@
                         "
                         placeholder="Digite seu e-mail..."
                         autocapitalize="none"
-                        required
+                        
                     />
                 </div>
                 <div class="w-full">

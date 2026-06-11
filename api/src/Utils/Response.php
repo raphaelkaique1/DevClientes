@@ -7,6 +7,7 @@ class Response {
     ) {}
 
     public static function send(Response $response): void {
+        header('Content-Type: text/plain');
         http_response_code($response->code);
         echo $response->message;
     }

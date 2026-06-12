@@ -5,7 +5,6 @@ require_once __DIR__ . '/../Http/Response.php';
 require_once __DIR__ . '/../Models/Customer.php';
 require_once __DIR__ . '/../Repositories/CustomerRepository.php';
 require_once __DIR__ . '/../Services/CustomerService.php';
-require_once __DIR__ . '/../Utils/Response.php';
 require_once __DIR__ . '/../Utils/Exception.php';
 
 class CustomerController {
@@ -16,21 +15,21 @@ class CustomerController {
     public function store(): void {
         $data = Request::data();
         if(!$data) {
-            Response::send(new Response('Formato da requisição inválido.', 415));
+            (new Response(ContentType::TEXT, 'Formato da requisição inválido.', 415))->send();
             return;
         }
         foreach($data as $key => $value) {
             if($key === 'status') continue;
             if(empty($value)) {
-                Response::send(new Response('Preencha todos os campos obrigatórios!', 406));
+                (new Response(ContentType::TEXT, 'Preencha todos os campos obrigatórios!', 406))->send();
                 return;
             };
         }
-        Response::send(match(Operation::runSafe(fn() => (new CustomerService())->create($data))) {
-            true    => new Response('Usuário criado com sucesso!', 201),
-            false   => new Response('Não foi possível criar o usuário.', 400),
-            default => new Response('Erro ao cadastrar usuário!', 500)
-        });
+        match(Operation::runSafe(fn() => (new CustomerService())->create($data))) {
+            true    => (new Response(ContentType::TEXT, 'Usuário criado com sucesso!', 201))->send(),
+            false   => (new Response(ContentType::TEXT, 'Não foi possível criar o usuário.', 400))->send(),
+            default => (new Response(ContentType::TEXT, 'Erro ao cadastrar usuário!', 500))->send()
+        };
     }
 }
 

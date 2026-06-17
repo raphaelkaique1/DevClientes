@@ -12,8 +12,8 @@ class CustomerController {
         $users = Operation::runSafe(fn() => (new CustomerService())->list());
         match($users[0]) {
             true    => (new Response(ContentType::HTML, $users[1], 200))->send(),
-            false   => (new Response(ContentType::HTML, $users[1], 400))->send(),
-            default => (new Response(ContentType::HTML, '<li>O servidor não respondeu devidamente.</li>', 500))->send()
+            false   => (new Response(ContentType::HTML, '<li class="italic text-stone-900">Nenhum usuário cadastrado...</li>', 204))->send(),
+            default => (new Response(ContentType::HTML, '<li class="bold text-red-300">Sem resposta do servidor.</li>', 500))->send()
         };
     }
 
@@ -23,12 +23,12 @@ class CustomerController {
             (new Response(ContentType::TEXT, 'Formato da requisição inválido.', 415))->send();
             return;
         }
-        foreach($data as $key => $value) {
-            if($key === 'status') continue;
-            if(empty($value)) {
-                (new Response(ContentType::TEXT, 'Preencha todos os campos obrigatórios!', 406))->send();
-                return;
-            };
+        if(array_any($data, function(mixed $value, string|int $key): bool {
+            if($key === 'status') return false;
+            return empty($value);
+        })) {
+            (new Response(ContentType::TEXT, 'Preencha todos os campos obrigatórios!', 406))->send();
+            return;
         }
         match(Operation::runSafe(fn() => (new CustomerService())->create($data))) {
             true    => (new Response(ContentType::TEXT, 'Usuário criado com sucesso!', 201))->send(),

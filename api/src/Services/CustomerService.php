@@ -8,17 +8,18 @@ require_once __DIR__ . '/../Utils/Validation.php';
 class CustomerService {
     public function list(): array {
         $customers = (new CustomerRepository)->all();
-        if(!empty($customers)) {
-            $list = '';
-            $status = true;
-        } else {
-            $list = '<li>Houve um problema ao solicitar a lista de usuários.</li>';
-            $status = false;
-        }
-        foreach($customers as $customer) {
-            $list .= "$customer->name";
-        }
-        return [$status, $list];
+        $list =
+            array_map((fn(object $customer): string => "
+                        <li class='text-black'>
+                            <h3 class='text-xl'><strong>$customer->name</strong></h3>
+                            <p>Email: $customer->email</p>
+                        </li>
+                    "),
+                    $customers)
+            |> (fn(array $list): string => implode('', $list))
+        ;
+        
+        return [count($customers) > 0, $list];
     }
 
     public function create(array $data): bool {

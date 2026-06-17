@@ -9,7 +9,12 @@ require_once __DIR__ . '/../Utils/Exception.php';
 
 class CustomerController {
     public function index(): void {
-        echo 'List customers';
+        $users = Operation::runSafe(fn() => (new CustomerService())->list());
+        match($users[0]) {
+            true    => (new Response(ContentType::HTML, $users[1], 200))->send(),
+            false   => (new Response(ContentType::HTML, $users[1], 400))->send(),
+            default => (new Response(ContentType::HTML, '<li>O servidor não respondeu devidamente.</li>', 500))->send()
+        };
     }
 
     public function store(): void {

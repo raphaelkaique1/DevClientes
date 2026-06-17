@@ -7,6 +7,12 @@ class CustomerRepository {
     public function __construct() {
         $this->db = Connection::connect();
     }
+
+    public function all(): array {
+        $stmt = $this->db->query("SELECT * FROM Customers");
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
     public function insert(Customer $customer): bool {
         $stmt = $this->db->prepare("INSERT INTO Customers (
                 name,

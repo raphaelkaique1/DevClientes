@@ -6,6 +6,21 @@ require_once __DIR__ . '/../Utils/Normalization.php';
 require_once __DIR__ . '/../Utils/Validation.php';
 
 class CustomerService {
+    public function list(): array {
+        $customers = (new CustomerRepository)->all();
+        if(!empty($customers)) {
+            $list = '';
+            $status = true;
+        } else {
+            $list = '<li>Houve um problema ao solicitar a lista de usuários.</li>';
+            $status = false;
+        }
+        foreach($customers as $customer) {
+            $list .= "$customer->name";
+        }
+        return [$status, $list];
+    }
+
     public function create(array $data): bool {
         $customerRepository = new CustomerRepository;
         $customer = new Customer(

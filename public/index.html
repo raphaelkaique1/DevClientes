@@ -12,7 +12,7 @@
         <title>DevClientes</title>
     </head>
 
-    <body class="bg-neutral-900 w-full h-screen" hx-ext="response-targets">
+    <body class="bg-neutral-900 w-full h-full" hx-ext="response-targets">
         <header>
             <div id="toast-notification" class="empty:hidden text-white font-semibold bg-green-400 py-4 px-8 rounded-md absolute top-8 right-8"></div>
             <div id="client-error-notification" class="empty:hidden text-white font-semibold bg-red-400 py-4 px-8 rounded-md absolute top-8 right-8"></div>
@@ -141,6 +141,14 @@
                     Salvar
                 </button>
             </form>
+            <ul
+                id="list-customers"
+                class="w-full max-w-3xl mx-auto mt-4"
+                hx-get="/api/customers"
+                hx-trigger="load"
+            >
+
+            </ul>
         </main>
     </body>
 

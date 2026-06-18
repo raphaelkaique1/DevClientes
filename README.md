@@ -159,15 +159,14 @@ No `public/index.html`:
   - `hx-target-2*="#toast-notification"`: respostas **2xx**
   - `hx-target-4*="#client-error-toast-notification"`: respostas **4xx**
   - `hx-target-5*="#server-error-toast-notification"`: respostas **5xx**
-- A listagem (`#list-customers`, agora um `<div>` com `hx-get` + `hx-trigger="load"`) trata os próprios erros dentro do bloco: `hx-target-4*`/`hx-target-5*` apontam para `#list-customers` e o texto é exibido nos `<span>` internos (`#client-error-list-notification` / `#server-error-list-notification`).
-- Classe `empty:hidden` (Tailwind) para esconder notificações vazias.
-- Único JS de UI (`public/js/script.js`): limpa o _toast_ 4s após o swap.
+- A listagem trata os próprios erros dentro do bloco: `hx-target-4*`/`hx-target-5*` apontam para `#list-customers` e o texto é exibido nos `<span>` internos (`#client-error-list-notification` / `#server-error-list-notification`).
+- Classe `empty:hidden` (Tailwind) para esconder elementos de notificações vazios.
+- JS UI (`public/js/script.js`): limpa o _toast_ 4s após o swap.
 
 ---
 
 ## 📜 Changelog resumido
 O projeto evoluiu de um `index.html` simples até uma API em camadas:
-
 1. Setup inicial + inclusão de HTMX e Tailwind via CDN.
 2. Schema inicial, model `Customer` e conexão PDO desacoplada por config.
 3. Método de criação de cliente (`POST`) com roteador e camadas Http.
@@ -176,7 +175,6 @@ O projeto evoluiu de um `index.html` simples até uma API em camadas:
 6. Notificações (toasts) e limpeza automática.
 7. Refatorações: camadas `Http`, `Services`, `Utils` e, por fim, a camada de **Views** para separar a geração de HTML.
 8. Listagem de clientes (`GET`) e aplicação do **pipe operator**.
-9. Padronização da resposta ao cliente: alertas enviados como **texto puro** direto no `Controller` (remoção da camada `messages.php`/`Warning`), `CustomerView::success()` renomeada para `list()` (e remoção de `none()`/`error()`), e separação das notificações entre os _toasts_ do formulário e o bloco de erros da própria listagem.
 
 ---
 

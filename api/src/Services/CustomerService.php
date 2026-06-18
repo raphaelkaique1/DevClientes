@@ -7,19 +7,7 @@ require_once __DIR__ . '/../Utils/Validation.php';
 
 class CustomerService {
     public function list(): array {
-        $customers = (new CustomerRepository)->all();
-        $list =
-            array_map((fn(object $customer): string => "
-                        <li class='text-black'>
-                            <h3 class='text-xl'><strong>$customer->name</strong></h3>
-                            <p>Email: $customer->email</p>
-                        </li>
-                    "),
-                    $customers)
-            |> (fn(array $list): string => implode('', $list))
-        ;
-        
-        return [count($customers) > 0, $list];
+        return (new CustomerRepository)->all();
     }
 
     public function create(array $data): bool {

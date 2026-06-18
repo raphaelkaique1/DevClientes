@@ -5,6 +5,7 @@ enum ContentType: string {
     case TEXT = 'text/plain';
     case HTML = 'text/html';
 }
+
 class Response {
     public function __construct(
         public ContentType $contentType,

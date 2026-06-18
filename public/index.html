@@ -13,10 +13,10 @@
     </head>
 
     <body class="bg-neutral-900 w-full h-full" hx-ext="response-targets">
-        <header>
-            <div id="toast-notification" class="empty:hidden text-white font-semibold bg-green-400 py-4 px-8 rounded-md absolute top-8 right-8"></div>
-            <div id="client-error-notification" class="empty:hidden text-white font-semibold bg-red-400 py-4 px-8 rounded-md absolute top-8 right-8"></div>
-            <div id="server-error-notification" class="empty:hidden text-white font-semibold bg-red-400 py-4 px-8 rounded-md absolute top-8 right-8"></div>
+        <header class="text-white font-semibold py-4 px-8 rounded-md absolute top-8 right-8">
+            <div id="toast-notification"              class="empty:hidden bg-green-400 "></div>
+            <div id="client-error-toast-notification" class="empty:hidden bg-red-400"></div>
+            <div id="server-error-toast-notification" class="empty:hidden bg-red-400"></div>
         </header>
         <main class="py-14">
             <h1 class="text-gray-400 text-center font-bold text-4xl mb-4">DevClientes</h1>
@@ -37,8 +37,8 @@
                 "
                 hx-post="/api/customers"
                 hx-target-2*="#toast-notification"
-                hx-target-4*="#client-error-notification"
-                hx-target-5*="#server-error-notification"
+                hx-target-4*="#client-error-toast-notification"
+                hx-target-5*="#server-error-toast-notification"
             >
                 <div class="w-full">
                     <label
@@ -141,13 +141,17 @@
                     Salvar
                 </button>
             </form>
-            <ul
+            <div
                 id="list-customers"
                 class="w-full max-w-3xl mx-auto mt-4"
                 hx-get="/api/customers"
                 hx-trigger="load"
+                hx-target-4*="#list-customers"
+                hx-target-5*="#list-customers"
             >
-            </ul>
+                <span id="client-error-list-notification" class="empty:hidden italic text-stone-900"></span>
+                <span id="server-error-list-notification" class="empty:hidden bold text-red-300"></span>
+            </div>
         </main>
     </body>
 

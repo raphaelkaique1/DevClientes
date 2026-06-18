@@ -4,7 +4,6 @@ require_once __DIR__ . '/../Http/Request.php';
 require_once __DIR__ . '/../Http/Response.php';
 require_once __DIR__ . '/../Models/Customer.php';
 require_once __DIR__ . '/../Views/Customers/List.php';
-require_once __DIR__ . '/../Views/Customers/Messages.php';
 require_once __DIR__ . '/../Repositories/CustomerRepository.php';
 require_once __DIR__ . '/../Services/CustomerService.php';
 require_once __DIR__ . '/../Utils/Exception.php';
@@ -12,9 +11,9 @@ require_once __DIR__ . '/../Utils/Exception.php';
 class CustomerController {
     public function index(): void {
         match($customers = Operation::runSafe(fn() => (new CustomerService())->list()) and true) {
-            empty($customers)    => (new Response(ContentType::HTML, CustomerView::none('Nenhum usuário cadastrado...'), 204))->send(),
-            is_array($customers) => (new Response(ContentType::HTML, CustomerView::success($customers), 200))->send(),
-            default              => (new Response(ContentType::HTML, CustomerView::error('Sem resposta do servidor.'), 500))->send()
+            is_array(!empty($customers)) => (new Response(ContentType::HTML, CustomerView::list($customers), 200))->send(),
+            empty($customers)            => (new Response(ContentType::TEXT, 'Nenhum usuário cadastrado...', 204))->send(),
+            default                      => (new Response(ContentType::TEXT, 'Sem resposta do servidor.', 500))->send()
         };
     }
 
@@ -31,9 +30,9 @@ class CustomerController {
             return;
         }
         match(Operation::runSafe(fn() => (new CustomerService())->create($data))) {
-            true    => (new Response(ContentType::TEXT, Warning::success('Usuário criado com sucesso!'), 201))->send(),
-            false   => (new Response(ContentType::TEXT, Warning::alert('Não foi possível criar o usuário.'), 400))->send(),
-            default => (new Response(ContentType::TEXT, Warning::error('Erro ao cadastrar usuário!'), 500))->send()
+            true    => (new Response(ContentType::TEXT, 'Usuário criado com sucesso!', 201))->send(),
+            false   => (new Response(ContentType::TEXT, 'Não foi possível criar o usuário.', 400))->send(),
+            default => (new Response(ContentType::TEXT, 'Erro ao cadastrar usuário!', 500))->send()
         };
     }
 }

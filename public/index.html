@@ -141,17 +141,17 @@
                     Salvar
                 </button>
             </form>
-            <div
+            <ul
                 id="list-customers"
                 class="w-full max-w-3xl mx-auto mt-4"
                 hx-get="/api/customers"
                 hx-trigger="load"
-                hx-target-4*="#list-customers"
-                hx-target-5*="#list-customers"
+                hx-target-4*="#client-error-list-notification"
+                hx-target-5*="#server-error-list-notification"
             >
-                <span id="client-error-list-notification" class="empty:hidden italic text-stone-900"></span>
-                <span id="server-error-list-notification" class="empty:hidden bold text-red-300"></span>
-            </div>
+                <li id="client-error-list-notification" class="empty:hidden italic text-stone-900"></li>
+                <li id="server-error-list-notification" class="empty:hidden bold text-red-300"></li>
+            </ul>
         </main>
     </body>
 

@@ -8,17 +8,22 @@
         <script src="https://cdn.jsdelivr.net/npm/htmx.org@2/dist/htmx.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2/dist/response-targets.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-        <script src="/public/js/script.js" defer></script>
         <title>DevClientes</title>
     </head>
 
     <body class="bg-neutral-900 w-full h-full" hx-ext="response-targets">
-        <header class="text-white font-semibold absolute top-8 right-8">
+        <header
+            class="text-white font-semibold absolute top-8 right-8"
+            hx-on::after-swap="event.detail.requestConfig.verb !== 'get' && setTimeout(() => document.getElementById(event.detail.elt.id).innerText = '', 4000)"
+        >
             <div id="toast-notification"              class="empty:hidden bg-green-400 py-4 px-8 rounded-md"></div>
             <div id="client-error-toast-notification" class="empty:hidden bg-red-400 py-4 px-8 rounded-md"></div>
             <div id="server-error-toast-notification" class="empty:hidden bg-red-400 py-4 px-8 rounded-md"></div>
         </header>
-        <main class="py-14">
+        <main
+            class="py-14"
+            hx-on::after-request="console.log(event.detail.requestConfig)"
+        >
             <h1 class="text-gray-400 text-center font-bold text-4xl mb-4">DevClientes</h1>
             <form
                 id="form-customers"
@@ -39,6 +44,7 @@
                 hx-target-2*="#toast-notification"
                 hx-target-4*="#client-error-toast-notification"
                 hx-target-5*="#server-error-toast-notification"
+                hx-on::after-request="event.detail.xhr.status === 201 && this.reset()"
             >
                 <div class="w-full">
                     <label

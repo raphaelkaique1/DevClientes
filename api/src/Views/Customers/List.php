@@ -12,7 +12,7 @@ class CustomerView {
                             "<span class='bg-emerald-400 text-white font-bold rounded-sm px-1'>Ativo</span>" :
                             "<span class='text-gray-500 rounded-sm px-1'>Inativo</span>")
                         ."</p>
-                        <div class='absolute bottom-2 left-8'>
+                        <div class='absolute top-8 right-4'>
                             <button
                                 type='button'
                                 class='

@@ -22,7 +22,7 @@
         </header>
         <main
             class="py-14"
-            hx-on::after-request="console.log(event.detail.requestConfig)"
+            hx-on::after-request="if(event.detail.requestConfig.verb === 'post' && event.detail.xhr.status === 201) htmx.ajax('GET', '/api/customers', '#list-customers')"
         >
             <h1 class="text-gray-400 text-center font-bold text-4xl mb-4">DevClientes</h1>
             <form

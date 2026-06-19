@@ -1,5 +1,4 @@
 # DevClientes
-
 Projeto de estudos para aprendizado prático de **HTMX**, trata-se de um CRUD simples de "clientes" com renderização de HTML no servidor e atualizações de interface sem JavaScript de UI.
 O foco central deste estudo é exercitar os conceitos de HTMX (hypermedia como motor do estado da aplicação) integrados a um backend PHP minimalista (escolhido devido à integração óbvia entre seu cerne e o modo como o HTMX trabalha).
 
@@ -125,7 +124,7 @@ O arquivo `Main.db` é **ignorado pelo Git** (`.gitignore`). Crie o banco localm
 2. **Subir o servidor embutido do PHP** a partir da raiz do projeto, o _router script_ (`App.php`) já resolve para que `http://localhost:8000/` exiba a página principal e `/api/*` seja roteado para o backend:
    ```bash
    cd DevClientes/ && php -S localhost:8000 App.php
-   ``
+   ```
 
 3. Acesse no navegador:
    ```
@@ -136,12 +135,12 @@ O arquivo `Main.db` é **ignorado pelo Git** (`.gitignore`). Crie o banco localm
 > 1. Se a requisição corresponde a um **arquivo estático** (por exemplo: `/public/js/script.js`), nada é executado (`return false`), então o próprio servidor assume, resolve a requisção e o entrega.
 > 2. Se o caminho parseado na requiseção, começa com `/api/`, delega ao **front controller** do backend (`api/index.php`).
 > 3. Qualquer outra rota entrega a **página principal** (`public/index.html`).
+>
 > Resultado em `localhost:8000/` carregando a aplicação, os assets carregam pela URL real e a API responde.
 
 ---
 
 ## 🔌 Endpoints da API
-
 | Método | Rota             | Ação                | Respostas                                                                                   |
 |--------|------------------|---------------------|---------------------------------------------------------------------------------------------|
 | `GET`  | `/api/customers` | Lista os clientes   | `200` lista · `204` vazio · `500` erro                                                      |
@@ -165,7 +164,7 @@ No `public/index.html`:
 
 ---
 
-## 📜 Changelog resumido
+## 📜 Changelog
 O projeto evoluiu de um `index.html` simples até uma API em camadas:
 1. Setup inicial + inclusão de HTMX e Tailwind via CDN.
 2. Schema inicial, model `Customer` e conexão PDO desacoplada por config.
@@ -179,7 +178,6 @@ O projeto evoluiu de um `index.html` simples até uma API em camadas:
 ---
 
 ## 📚 Referências
-
 - [Documentação do HTMX](https://htmx.org/docs/)
 - [Extensão response-targets](https://htmx.org/extensions/response-targets/)
 - [Livro "Hypermedia Systems"](https://hypermedia.systems/) (gratuito)

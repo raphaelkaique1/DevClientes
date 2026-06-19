@@ -11,9 +11,9 @@ require_once __DIR__ . '/../Utils/Exception.php';
 class CustomerController {
     public function index(): void {
         match($customers = Operation::runSafe(fn() => (new CustomerService())->list()) and true) {
-            is_array(!empty($customers)) => (new Response(ContentType::HTML, CustomerView::list($customers), 200))->send(),
-            empty($customers)            => (new Response(ContentType::TEXT, 'Nenhum usuário cadastrado...', 204))->send(),
-            default                      => (new Response(ContentType::TEXT, 'Sem resposta do servidor.', 500))->send()
+            is_array($customers) && !empty($customers) => (new Response(ContentType::HTML, CustomerView::list($customers), 200))->send(),
+            empty($customers)    => (new Response(ContentType::TEXT, 'Nenhum usuário cadastrado...', 204))->send(),
+            default              => (new Response(ContentType::TEXT, 'Sem resposta do servidor.', 500))->send()
         };
     }
 

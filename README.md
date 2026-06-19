@@ -116,17 +116,22 @@ O arquivo `Main.db` é **ignorado pelo Git** (`.gitignore`). Crie o banco localm
 ## 🚀 Como executar localmente
 > Pré-requisitos: **PHP 8.5+** com a extensão **PDO SQLite** habilitada e o binário `sqlite3` (opcional, para criar o banco).
 
-1. **Criar o banco de dados** a partir do schema:
+1. **Clone o repositório remoto** do projeto para seu ambiente local:
+   ```bash
+   git clone https://github.com/raphaelkaique1/DevClientes.git && cd DevClientes/
+   ```
+
+2. **Criar o banco de dados** a partir do schema:
    ```bash
    sqlite3 api/src/Database/Main.db < api/src/Database/Schema.sql
    ```
 
-2. **Subir o servidor embutido do PHP** a partir da raiz do projeto, o _router script_ (`App.php`) já resolve para que `http://localhost:8000/` exiba a página principal e `/api/*` seja roteado para o backend:
+3. **Subir o servidor embutido do PHP** a partir da raiz do projeto, o _router script_ (`App.php`) já resolve para que `http://localhost:8000/` exiba a página principal e `/api/*` seja roteado para o backend:
    ```bash
-   cd DevClientes/ && php -S localhost:8000 App.php
+   php -S localhost:8000 App.php
    ```
 
-3. Acesse no navegador:
+4. Acesse no navegador:
    ```
    http://localhost:8000
    ```

@@ -1,17 +1,17 @@
 <?php
 declare(strict_types=1);
-$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+require __DIR__ . '/api/config/URL.php';
 
 return match (true) {
-    $path !== '/' && is_file(__DIR__ . $path) => false,
-    str_starts_with($path, '/api/') => (function (): true {
+    $PATH !== '/' && is_file(__DIR__ . $PATH) => false,
+    str_starts_with($PATH, '/api/') => (function (): true {
         require __DIR__ . '/api/index.php';
         return true;
     })(),
     default => (function (): null {
         require __DIR__ . '/public/index.html';
         return null;
-    })(),
+    })()
 };
 
 ?>

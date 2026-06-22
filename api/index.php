@@ -9,6 +9,7 @@ $customerController = new CustomerController();
 
 $router->get('/api/customers', [$customerController, 'index']);
 $router->post('/api/customers', [$customerController, 'store']);
+$router->delete('/api/customers/{id}', [$customerController, 'remove']);
 $router->dispatch($_SERVER['REQUEST_METHOD'], $PATH);
 
 ?>

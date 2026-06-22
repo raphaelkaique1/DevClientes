@@ -4,6 +4,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="htmx-config" content='{"methodsThatUseUrlParams": ["get"]}' />
         <link rel="icon" href="https://htmx.org/favicon.svg" type="image/svg+xml" />
         <script src="https://cdn.jsdelivr.net/npm/htmx.org@2/dist/htmx.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2/dist/response-targets.js"></script>
@@ -16,13 +17,16 @@
             class="text-white font-semibold absolute top-8 right-8"
             hx-on::after-swap="event.detail.requestConfig.verb !== 'get' && setTimeout(() => document.getElementById(event.detail.elt.id).innerText = '', 4000)"
         >
-            <div id="toast-notification"              class="empty:hidden bg-green-400 py-4 px-8 rounded-md"></div>
-            <div id="client-error-toast-notification" class="empty:hidden bg-red-400 py-4 px-8 rounded-md"></div>
-            <div id="server-error-toast-notification" class="empty:hidden bg-red-400 py-4 px-8 rounded-md"></div>
+            <div id="toast-created-notification"       class="empty:hidden bg-green-400 py-4 px-8 rounded-md"></div>
+            <div id="client-error-create-notification" class="empty:hidden bg-red-400 py-4 px-8 rounded-md"></div>
+            <div id="server-error-create-notification" class="empty:hidden bg-red-400 py-4 px-8 rounded-md"></div>
+            <div id="toast-delete-notification"        class="empty:hidden bg-zinc-500 py-4 px-8 rounded-md"></div>
+            <div id="client-error-delete-notification" class="empty:hidden bg-red-400 py-4 px-8 rounded-md"></div>
+            <div id="server-error-delete-notification" class="empty:hidden bg-red-400 py-4 px-8 rounded-md"></div>
         </header>
         <main
             class="py-14"
-            hx-on::after-request="if(event.detail.requestConfig.verb === 'post' && event.detail.xhr.status === 201) htmx.ajax('GET', '/api/customers', '#list-customers')"
+            hx-on::after-request="if(event.detail.requestConfig.verb !== 'get' && event.detail.xhr.status >= 200) htmx.ajax('GET', '/api/customers', '#list-customers')"
         >
             <h1 class="text-gray-400 text-center font-bold text-4xl mb-4">DevClientes</h1>
             <form
@@ -41,9 +45,9 @@
                     gap-4
                 "
                 hx-post="/api/customers"
-                hx-target-2*="#toast-notification"
-                hx-target-4*="#client-error-toast-notification"
-                hx-target-5*="#server-error-toast-notification"
+                hx-target-2*="#toast-created-notification"
+                hx-target-4*="#client-error-create-notification"
+                hx-target-5*="#server-error-create-notification"
                 hx-on::after-request="event.detail.xhr.status === 201 && this.reset()"
             >
                 <div class="w-full">

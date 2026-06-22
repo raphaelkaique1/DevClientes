@@ -6,16 +6,19 @@ enum Type {
     case CASE_UPPER;
     case CASE_LOWER;
     case CASE_EMAIL;
+    case CASE_NUMBER;
 };
 
 class Normalize {
-    public static function format(string $text, Type $method): string {
-        $text = mb_strtolower($text, 'UTF-8');
+    public static function format(string|int $info, Type $method): string|int|null {
+        is_string($info) && mb_strtolower($info, 'UTF-8');
         return match($method) {
-            Type::CASE_TITLE => mb_convert_case($text, MB_CASE_TITLE, "UTF-8"),
-            Type::CASE_UPPER => mb_strtoupper($text, "UTF-8"),
-            Type::CASE_LOWER => $text,
-            Type::CASE_EMAIL => filter_var($text, FILTER_SANITIZE_EMAIL)
+            Type::CASE_TITLE  => (string) mb_convert_case($info, MB_CASE_TITLE, "UTF-8"),
+            Type::CASE_UPPER  => (string) mb_strtoupper($info, "UTF-8"),
+            Type::CASE_LOWER  => (string) $info,
+            Type::CASE_EMAIL  => (string) filter_var($info, FILTER_SANITIZE_EMAIL),
+            Type::CASE_NUMBER => (int)    $info,
+            default           => null
         };
     }
 

@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 class Validate {
 
+    public static function id(string|int|float $id, int $range): ?int {
+        return $id > 0 && $id <= $range ? $id : null;
+    }
+
     public static function name(string $name): ?string {
         return preg_match("/^[\p{L}\s'.-]+$/u", $name) ? $name : null;
     }

@@ -38,6 +38,10 @@ class CustomerView {
                                     rounded-sm
                                     px-1
                                 '
+                                hx-delete='/api/customers/$customer->id'
+                                hx-target-2*='#toast-delete-notification'
+                                hx-target-4*='#client-error-delete-notification'
+                                hx-target-5*='#server-error-delete-notification'
                             >
                                 Excluir
                             </button>

@@ -39,6 +39,15 @@ class CustomerController {
             default => (new Response(ContentType::TEXT, 'Erro ao cadastrar usuário!', 500))->send()
         };
     }
+
+    public function remove(array $params): void {
+        $id = (int) $params['id'];
+        match (Operation::runSafe(fn() => (new CustomerService())->exclude($id))) {
+            true    => (new Response(ContentType::TEXT, 'Usuário deletado com sucesso.', 204))->send(),
+            false   => (new Response(ContentType::TEXT, 'Usuário não encontrado.', 404))->send(),
+            default => (new Response(ContentType::TEXT, 'Erro ao excluir.', 500))->send(),
+        };
+    }
 }
 
 ?>

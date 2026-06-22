@@ -9,12 +9,17 @@ class CustomerRepository {
     }
 
     public function all(): array {
-        $stmt = $this->db->query("SELECT * FROM Customers");
-        return $stmt->fetchAll(PDO::FETCH_OBJ);
+        return $this->db->query("SELECT * FROM Customers")
+        ->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    public function total(): int|false {
+        return $this->db->query("SELECT MAX(id) AS max FROM Customers")
+        ->fetchColumn();
     }
 
     public function insert(Customer $customer): bool {
-        $stmt = $this->db->prepare("INSERT INTO Customers (
+        return $this->db->prepare("INSERT INTO Customers (
                 name,
                 email,
                 role,
@@ -25,13 +30,19 @@ class CustomerRepository {
                 :role,
                 :status
             )
-        ");
-        return $stmt->execute([
+        ")
+        ->execute([
             ':name'   => $customer->name,
             ':email'  => $customer->email,
             ':role'   => $customer->role,
             ':status' => $customer->status
         ]);
+    }
+
+    public function delete(int $id): bool {
+        $stmt = $this->db->prepare("DELETE FROM Customers WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        return $stmt->rowCount() > 0;
     }
 }
 

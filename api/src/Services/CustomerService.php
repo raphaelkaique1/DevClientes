@@ -21,6 +21,11 @@ class CustomerService {
         );
         return $customerRepository->insert($customer);
     }
+
+    public function exclude(int $id): bool {
+        return Validate::id(Normalize::format($id, Type::CASE_NUMBER), (new CustomerRepository())->total()) !== null
+        && (new CustomerRepository)->delete($id);
+    }
 }
 
 ?>

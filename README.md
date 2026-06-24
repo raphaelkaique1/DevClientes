@@ -14,8 +14,9 @@ Entender, na prática, como o **HTMX** muda a forma de construir interfaces web:
 - [x] Carregar dados automaticamente com `hx-trigger="load"`.
 - [x] Rotear notificações por **código de status HTTP** usando a extensão `response-targets` (`hx-target-2*`, `hx-target-4*`, `hx-target-5*`).
 - [x] Renderizar fragmentos de HTML no servidor (camada de _Views_).
-- [ ] Implementar edição (`PUT`/`PATCH`) e exclusão (`DELETE`) de clientes (botões já presentes nos cards, ações ainda pendentes).
-- [ ] Atualizar a lista após edições sem recarregar tudo.
+- [x] Excluir clientes via `hx-delete` (`DELETE /api/customers/{id}`) com rota parametrizada no `Router`.
+- [x] Atualizar a lista automaticamente após criar/excluir, sem recarregar a página.
+- [ ] Implementar edição (`PUT`/`PATCH`) de clientes.
 
 ---
 
@@ -37,9 +38,9 @@ Entender, na prática, como o **HTMX** muda a forma de construir interfaces web:
 ### Recursos modernos do PHP utilizados
 O código explora propositalmente novidades recentes da linguagem (para estudo e conhecimento):
 
-- **Pipe operator `|>`** (PHP 8.5): em `api/src/Views/Customers/list.php`.
+- **Pipe operator `|>`** (PHP 8.5): em `api/src/Views/Customers/List.php`.
 - **`array_any()`** (PHP 8.4): validação de campos no `CustomerController`.
-- Expressões **`match`**, **enums** (`ContentType`, `Type`, `Violation`), **constructorproperty promotion** e **tipos nullable**.
+- Expressões **`match`**, **enums** (`ContentType`, `Type`, `Violation`, `Status`, `Category`, `Tag`), **constructor property promotion** e **tipos nullable**.
 
 ---
 
@@ -50,26 +51,30 @@ DevClientes/
 ├── public/                       # Raiz pública (front-end)
 │   └── index.html                # Página única com os atributos hx-* e reações hx-on::
 └── api/                          # Backend PHP
-    ├── index.php                 # Front controller: registra rotas e despacha
+    ├── index.php                 # Front controller: registra rotas (GET/POST/DELETE) e despacha
     ├── config/
-    │   └── Database.php          # DSN/credenciais do PDO (SQLite)
+    │   ├── Database.php          # DSN/credenciais do PDO (SQLite)
+    │   └── URL.php               # Parseia o $PATH da requisição (compartilhado por App.php e index.php)
     └── src/
-        ├── Router.php                   # Roteador
+        ├── Router.php                   # Roteador (suporta parâmetros de rota, ex.: {id})
         ├── Controllers/
-        │   └── CustomerController.php   # Controlador de lógica
+        │   └── CustomerController.php   # Controlador de lógica (index / store / remove)
         ├── Services/
-        │   └── CustomerService.php      # Regras de negócio
+        │   └── CustomerService.php      # Regras de negócio (list / create / exclude)
         ├── Repositories/
-        │   └── CustomerRepository.php   # Acesso ao banco (SQL)
+        │   └── CustomerRepository.php   # Acesso ao banco (all / total / insert / delete)
         ├── Models/
         │   └── Customer.php             # Entidade Customer
         ├── Http/
         │   ├── Request.php              # Lê e normaliza o corpo da requisição
         │   └── Response.php             # Monta a resposta (Content-Type + status)
-        ├── Views/Customers/
-        │   └── list.php                 # Fragmento HTML da lista de clientes (CustomerView::list)
+        ├── Views/
+        │   ├── Customers/
+        │   │   └── List.php             # Fragmento HTML da lista (CustomerView::list, enum Status)
+        │   └── Alerts/
+        │       └── Notifications.php    # Notificações/toasts (AlertsView::notification, enums Category/Tag)
         ├── Utils/
-        │   ├── Validation.php           # Validação de nome/email/cargo
+        │   ├── Validation.php           # Validação de id/nome/email/cargo
         │   ├── Normalization.php        # Normalização (case, sanitização)
         │   └── Exception.php            # Operation::runSafe (try/catch helper)
         └── Database/
@@ -152,12 +157,15 @@ O arquivo `Main.db` é **ignorado pelo Git** (`.gitignore`). Crie o banco localm
 ---
 
 ## 🔌 Endpoints da API
-| Método | Rota             | Ação                | Respostas                                                                                                                |
-|--------|------------------|---------------------|--------------------------------------------------------------------------------------------------------------------------|
-| `GET`  | `/api/customers` | Lista os clientes   | `200` lista · `204` vazio · `500` erro                                                                                   |
-| `POST` | `/api/customers` | Cadastra um cliente | `201` criado · `400` inválido · `406` campos faltando · `409` e-mail já cadastrado · `415` formato inválido · `500` erro |
+| Método   | Rota                  | Ação                | Respostas                                                                                                                |
+|----------|-----------------------|---------------------|--------------------------------------------------------------------------------------------------------------------------|
+| `GET`    | `/api/customers`      | Lista os clientes   | `200` lista (ou mensagem de "vazio") · `500` erro                                                                        |
+| `POST`   | `/api/customers`      | Cadastra um cliente | `201` criado · `400` inválido · `406` campos faltando · `409` e-mail já cadastrado · `415` formato inválido · `500` erro |
+| `DELETE` | `/api/customers/{id}` | Exclui um cliente   | `200` excluído · `404` não encontrado · `500` erro                                                                       |
 
-Todas as respostas são padronizadas em `media type: text`, contemplando os `subtypes` mais utilizados dessa categoria. Em suma, os alertas (texto estático padronizado de acordo com o `http status code` devido) são em `plain`, enquanto os elementos dinâmicos (obtidos através de iteração com o DB) em `html` prontas para o HTMX inserir no DOM.
+> Rotas inexistentes respondem `404` com `{"error":"Route not found"}` (ver `Router::dispatch`).
+
+Todas as respostas são padronizadas em `media type: text`, contemplando os `subtypes` mais utilizados dessa categoria. Em suma, tanto os alertas (em fragmentos HTML padronizados de acordo com o `http status code` devido) quanto os elementos dinâmicos (obtidos através de iteração com o DB) são enviados em `html` prontos para o HTMX inserir no DOM. Por SEO/hypermedia, a listagem **sempre** retorna HTML renderizado (inclusive o estado vazio, com `200`), em vez de um `204` sem corpo.
 
 ---
 
@@ -165,16 +173,14 @@ Todas as respostas são padronizadas em `media type: text`, contemplando os `sub
 No `public/index.html`:
 - `hx-post="/api/customers"`: envia o formulário ao servidor.
 - `hx-get="/api/customers"` + `hx-trigger="load"`: carrega a lista de Customers quando a página é carregada.
-- Extensão **`response-targets`** (`hx-ext="response-targets"`) para rotear o swap pelo status HTTP. O formulário de cadastro envia as notificações para os _toasts_ no `<header>`:
-  - `hx-target-2*="#toast-notification"`: respostas **2xx**
-  - `hx-target-4*="#client-error-toast-notification"`: respostas **4xx**
-  - `hx-target-5*="#server-error-toast-notification"`: respostas **5xx**
-- A listagem trata os próprios erros dentro do bloco: `hx-target-4*`/`hx-target-5*` apontam para `#list-customers` e o texto é exibido nos `<span>` internos (`#client-error-list-notification` / `#server-error-list-notification`).
-- Classe `empty:hidden` (Tailwind) para esconder elementos de notificações vazios.
+- `hx-delete="/api/customers/{id}"` no botão **Excluir** de cada card (renderizado pela _View_), com `hx-disabled-elt="this"` para evitar cliques duplos.
+- Extensão **`response-targets`** (`hx-ext="response-targets"`): tanto as respostas de sucesso (`hx-target`) quanto as de erro (`hx-target-error`) do formulário apontam para um único _toast_ (`#toast-notification`), exibindo a notificação retornada pela `AlertsView`.
+- Configuração `methodsThatUseUrlParams: ["get"]` (`<meta name="htmx-config">`) para que apenas requisições `GET` mandem parâmetros pela URL.
+- Classe `empty:hidden` (Tailwind) para esconder o _toast_ quando vazio.
 - Reações via `hx-on::` (sem arquivo JS separado):
-  - `hx-on::after-swap` no `<header>`: limpa o _toast_ 4s após o swap (substitui o antigo `script.js`).
+  - `hx-on::after-swap` no `#toast-notification`: limpa o _toast_ 2s após o swap (apenas para verbos diferentes de `get`).
   - `hx-on::after-request` no `<form>`: `this.reset()` quando a resposta é `201`.
-  - `hx-on::after-request` no `<main>`: após um `201`, dispara `htmx.ajax('GET', '/api/customers', '#list-customers')` para recarregar a lista sem reload.
+  - `hx-on::after-request` no `<main>`: após qualquer mutação bem-sucedida (verbo ≠ `get` e status ≥ 200), dispara `htmx.ajax('GET', '/api/customers', '#list-customers')` para recarregar a lista sem reload — cobre tanto a criação (`POST`) quanto a exclusão (`DELETE`).
 
 ---
 
@@ -191,6 +197,10 @@ O projeto evoluiu de um `index.html` simples até uma API em camadas:
 9. Tratamento de e-mail duplicado: violação de `UNIQUE` detectada pelo SQLSTATE `23000` (enum `Violation`) → resposta `409`.
 10. Lista estilizada em _cards_, exibindo cargo, status (`Ativo`/`Inativo`) e botões **Editar**/**Excluir**.
 11. Remoção do `public/js/script.js`: reações de UI migradas para atributos `hx-on::` (limpeza do _toast_, reset do formulário e recarga automática da lista após um `201`).
+12. Recarga automática da lista após criar um cliente (`hx-on::after-request` no `<main>`).
+13. Centralização do parsing da URL em `api/config/URL.php` (`$PATH`), reaproveitado por `App.php` e `api/index.php` (idempotência da rota).
+14. Camada de _Views_ dividida em `Customers/List.php` (enum `Status`) e `Alerts/Notifications.php` (`AlertsView::notification` com enums `Category`/`Tag`); listagem passa a sempre devolver HTML (melhoria de SEO/hypermedia, incluindo o estado vazio com `200`).
+15. Exclusão de clientes (`DELETE /api/customers/{id}`): rota parametrizada no `Router`, `CustomerController::remove`, `CustomerService::exclude`, `CustomerRepository::delete`/`total` e `Validate::id`; botão **Excluir** funcional via `hx-delete`, com recarga da lista após a exclusão.
 
 ---
 
@@ -206,4 +216,4 @@ O projeto evoluiu de um `index.html` simples até uma API em camadas:
 ## 📄 Licença
 Distribuído sob a licença **MIT**. Veja o arquivo [`LICENSE`](./LICENSE) para os termos completos.
 
-<div align="center">2026 <a href="https://raphaelkaique1.github.io/raphaelkaique1/main">Raphael Kaíque Dias Santos</a></div>
+<div align="center">2026 - <a href="https://raphaelkaique1.github.io/raphaelkaique1/main">Raphael Kaíque Dias Santos</a></div>

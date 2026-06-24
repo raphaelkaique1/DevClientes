@@ -10,20 +10,43 @@
         <script src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2/dist/response-targets.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
         <title>DevClientes</title>
+        <style>
+            /* HTML: <div class="loader"></div> */
+            .loader {
+                width: 50px;
+                padding: 8px;
+                aspect-ratio: 1;
+                border-radius: 50%;
+                background: #fff;
+                --_m:
+                    conic-gradient(#0000 10%, #000),
+                    linear-gradient(#000 0 0) content-box;
+                -webkit-mask: var(--_m);
+                mask: var(--_m);
+                -webkit-mask-composite: source-out;
+                mask-composite: subtract;
+                animation: l3 1s infinite linear;
+            }
+
+            .msg {
+                animation: disappear 5s forwards;
+            }
+
+            @keyframes l3 {
+                to {
+                    transform: rotate(1turn)
+                }
+            }
+        </style>
     </head>
 
     <body class="bg-neutral-900 w-full h-full" hx-ext="response-targets">
-        <header
-            class="text-white font-semibold absolute top-8 right-8"
-            hx-on::after-swap="event.detail.requestConfig.verb !== 'get' && setTimeout(() => document.getElementById(event.detail.elt.id).innerText = '', 4000)"
+        <div
+            id="toast-notification"
+            class="text-white font-semibold absolute top-8 right-8 empty:hidden"
+            hx-on::after-swap="event.detail.requestConfig.verb !== 'get' && setTimeout(() => this.innerText = '', 2000)"
         >
-            <div id="toast-created-notification"       class="empty:hidden bg-green-400 py-4 px-8 rounded-md"></div>
-            <div id="client-error-create-notification" class="empty:hidden bg-red-400 py-4 px-8 rounded-md"></div>
-            <div id="server-error-create-notification" class="empty:hidden bg-red-400 py-4 px-8 rounded-md"></div>
-            <div id="toast-delete-notification"        class="empty:hidden bg-zinc-500 py-4 px-8 rounded-md"></div>
-            <div id="client-error-delete-notification" class="empty:hidden bg-red-400 py-4 px-8 rounded-md"></div>
-            <div id="server-error-delete-notification" class="empty:hidden bg-red-400 py-4 px-8 rounded-md"></div>
-        </header>
+        </div>
         <main
             class="py-14"
             hx-on::after-request="if(event.detail.requestConfig.verb !== 'get' && event.detail.xhr.status >= 200) htmx.ajax('GET', '/api/customers', '#list-customers')"
@@ -45,9 +68,11 @@
                     gap-4
                 "
                 hx-post="/api/customers"
-                hx-target-2*="#toast-created-notification"
-                hx-target-4*="#client-error-create-notification"
-                hx-target-5*="#server-error-create-notification"
+                hx-trigger="submit"
+                hx-disabled-elt="#submit-save"
+                hx-indicator="#loader"
+                hx-target="#toast-notification"
+                hx-target-error="#toast-notification"
                 hx-on::after-request="event.detail.xhr.status === 201 && this.reset()"
             >
                 <div class="w-full">
@@ -145,22 +170,21 @@
                     <input type="checkbox" name="status" id="status" />
                 </div>
                 <button
+                    id="submit-save"
                     type="submit"
-                    class="bg-blue-500 w-full rounded ptext-white font-semibold-2 font-medium"
+                    class="bg-blue-500 w-full rounded text-white font-semibold-2 font-medium flex justify-center items-center"
                 >
                     Salvar
                 </button>
             </form>
+            <div class="loader htmx-indicator mx-auto my-2" id="loader"></div>
             <ul
                 id="list-customers"
                 class="w-full max-w-3xl mx-auto mt-4"
                 hx-get="/api/customers"
+                hx-indicator="#loader"
                 hx-trigger="load"
-                hx-target-4*="#client-error-list-notification"
-                hx-target-5*="#server-error-list-notification"
             >
-                <li id="client-error-list-notification" class="empty:hidden italic text-stone-900"></li>
-                <li id="server-error-list-notification" class="empty:hidden bold text-red-300"></li>
             </ul>
         </main>
     </body>
